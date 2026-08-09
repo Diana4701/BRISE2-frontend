@@ -24,13 +24,13 @@ const connectedChildren = computed(() => {
         .map((c: any) => c.data?.name || c.data?.label);
 })
 
-// manually created categories
+// created categories
 const customCategories = computed(() => {
     if (!activeNode.value?.id) return []
     return graphStore.nodes
         .filter((node: Node) =>
             node.type === 'category' &&
-            node.data?.isManual &&
+
             graphStore.edges.some((e: any) => e.source === activeNode.value.id && e.target === node.id)
         )
         .map((node: any) => ({ id: node.id, name: node.data?.name }))
@@ -57,12 +57,12 @@ function onDragEnd() {
             <h3>All Categories</h3>
             <draggable :key="activeNode?.id" v-model="localCat" :disabled="!isOrdinal" item-key="id" @end="onDragEnd">
                 <template #item="{ element }">
-                    <ul>
-                        <li class="draggable-item">
-                            <span v-if="isOrdinal" class="drag-handle">⠿</span>
-                            {{ element.name }}
-                        </li>
-                    </ul>
+
+                    <li class="draggable-item">
+                        <span v-if="isOrdinal" class="drag-handle">⠿</span>
+                        {{ element.name }}
+                    </li>
+
                 </template>
             </draggable>
 

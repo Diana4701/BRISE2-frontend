@@ -100,6 +100,14 @@ function saveConfig() {
   background: #6aacee;
 }
 
+.action-btn:disabled {
+
+  cursor: not-allowed;
+  background: #e2e8f0;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
 .wfl-panel-closed {
   height: 40px !important;
   resize: none;

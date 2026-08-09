@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useGraphStore } from '../store.ts'
-import { storeToRefs } from 'pinia'
+import draggable from 'vuedraggable'
 import type { Node } from '@vue-flow/core'
 
 const props = defineProps<{
@@ -17,6 +17,8 @@ const newCategory = ref('')
 const emit = defineEmits(['close', 'open-category-table'])
 
 const showError = ref(false)
+const isOrdinal = computed(() => activeNode.value?.type === 'ordinal')
+
 
 function addCategory() {
     if (!newCategory.value.trim()) {
@@ -60,6 +62,21 @@ const categories = computed(() => {
         )
 
 });
+
+
+const localCat = ref(categories.value.slice(0, 5))
+
+watch(categories, (newVal) => {
+    localCat.value = newVal.slice(0, 5).map((v: any) => ({ ...v }))
+
+})
+
+
+function onDragEnd() {
+    const newIds = localCat.value.map((c: any) => c.id)
+    graphStore.sortOrdinalCategories(activeNode.value.id, newIds)
+}
+
 
 // block sidebar from closing 
 function blockSidebar() {
@@ -202,20 +219,22 @@ const defaultCategoryId = computed({
                     already in use! </p>
                 <!--custom categories-->
                 <label>Categories</label>
-                <ul>
+                <draggable :key="activeNode?.id" v-model="localCat" :disabled="!isOrdinal" item-key="id" tag="ul"
+                    @end="onDragEnd">
+                    <template #item="{ element }">
+                        <li>
+                            <span v-if="isOrdinal" class="drag-handle">⠿</span>
+                            {{ element.data?.name }}
+                            <button class="btn btn-danger" @click="removeChild(element.id)">x</button>
+                        </li>
+                    </template>
+                </draggable>
 
-                    <li v-for="item in categories.slice(0, 5)" :key="item.id">
-                        {{ item.data?.name }}
-                        <button class="btn btn-danger" @click="removeChild(item.id)">x</button>
-                    </li>
-
-                    <div v-if="categories.length > 5">
-                        <button type="button" class="btn-link" @click="emit('open-category-table', 'categories')">
-                            + {{ categories.length - 5 }} ↗
-                        </button>
-                    </div>
-                </ul>
-
+                <div v-if="categories.length > 5">
+                    <button type="button" class="btn-link" @click="emit('open-category-table', 'categories')">
+                        + {{ categories.length - 5 }} ↗
+                    </button>
+                </div>
                 <input type="text" v-model="newCategory" @input="showError = false" class="styled-input"
                     :class="{ 'input-error': isNameTaken }" />
                 <p v-if="showError" style="color: red; font-size: 12px;">Category cannot be empty</p>
@@ -339,6 +358,16 @@ const defaultCategoryId = computed({
     align-items: center;
     margin-bottom: 8px;
     font-size: 16px;
+}
+
+.drag-handle {
+    cursor: grab;
+    color: #94a3b8;
+    margin-right: 8px;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
 }
 
 .close-btn {

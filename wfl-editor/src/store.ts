@@ -419,9 +419,10 @@ export const useGraphStore = defineStore('graph', () => {
 function sortOrdinalCategories(parentId: string, orderedIds: string[]) {
     saveCheckpoint()
     const parent = nodes.value.find((n:Node) => n.id === parentId)
-    if(parent?.data) {
-        parent.data.childrenIds = orderedIds
-    }
+   
+
+    const remaining = parent.data.childrenIds.filter((id: string) => !orderedIds.includes(id))
+    return parent.data.childrenIds = [...orderedIds, ...remaining]
 }
         
 
