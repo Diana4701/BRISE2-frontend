@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useGraphStore } from '../store.ts'
 import type { Node } from '@vue-flow/core'
-
+import draggable from 'vuedraggable'
 const props = defineProps<{
     isOpen: boolean
     viewMode: 'categories' | 'nodes' | null
@@ -11,7 +11,7 @@ const props = defineProps<{
 const emit = defineEmits(['close', 'isOpen'])
 const graphStore = useGraphStore()
 
-
+const isOrdinal = computed(() => activeNode.value?.type === 'ordinal')
 
 const activeNode = computed(() => graphStore.activeNode as any)
 
@@ -33,9 +33,21 @@ const customCategories = computed(() => {
             node.data?.isManual &&
             graphStore.edges.some((e: any) => e.source === activeNode.value.id && e.target === node.id)
         )
-        .map((node: any) => node.data?.name)
+        .map((node: any) => ({ id: node.id, name: node.data?.name }))
 });
 
+
+const localCat = ref([...customCategories.value])
+watch(customCategories, (newVal) => {
+    localCat.value = newVal.map((v: any) => ({ ...v }))
+
+}, { deep: false })
+
+
+function onDragEnd() {
+    const newIds = localCat.value.map(c => c.id)
+    graphStore.sortOrdinalCategories(activeNode.value.id, newIds)
+}
 </script>
 
 <template>
@@ -43,11 +55,17 @@ const customCategories = computed(() => {
         <div class="category-modal">
             <button class="cat-btn" @click="emit('close')">x</button>
             <h3>All Categories</h3>
-            <ul>
-                <li v-for="(cat, index) in customCategories" :key="index">
-                    {{ cat }}
-                </li>
-            </ul>
+            <draggable :key="activeNode?.id" v-model="localCat" :disabled="!isOrdinal" item-key="id" @end="onDragEnd">
+                <template #item="{ element }">
+                    <ul>
+                        <li class="draggable-item">
+                            <span v-if="isOrdinal" class="drag-handle">⠿</span>
+                            {{ element.name }}
+                        </li>
+                    </ul>
+                </template>
+            </draggable>
+
         </div>
     </div>
     <div v-if="props.isOpen && props.viewMode === 'nodes'" class="category-overlay">
@@ -86,6 +104,16 @@ const customCategories = computed(() => {
     padding: 20px;
     border-radius: 8px;
     min-width: 300px;
+}
+
+.drag-handle {
+    cursor: grab;
+    color: #94a3b8;
+    margin-right: 8px;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
 }
 
 .children-modal {

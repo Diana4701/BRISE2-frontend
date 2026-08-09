@@ -333,8 +333,6 @@ export const useGraphStore = defineStore('graph', () => {
                 isManual: isManualCategory 
         }
       }
-
-
         nodes.value.push(node)
 
         edges.value.push({
@@ -416,6 +414,14 @@ export const useGraphStore = defineStore('graph', () => {
     return ['Context', 'SearchSpace', ...ancestorNames, node?.data?.name]
         .filter(Boolean)
         .join('.')
+}
+
+function sortOrdinalCategories(parentId: string, orderedIds: string[]) {
+    saveCheckpoint()
+    const parent = nodes.value.find((n:Node) => n.id === parentId)
+    if(parent?.data) {
+        parent.data.childrenIds = orderedIds
+    }
 }
         
 
@@ -535,6 +541,7 @@ export const useGraphStore = defineStore('graph', () => {
         redoAction,
         undoStack,
         redoStack,
-        canExport
+        canExport,
+        sortOrdinalCategories
     }
 })
