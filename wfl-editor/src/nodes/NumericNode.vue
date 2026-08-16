@@ -11,6 +11,7 @@ const props = defineProps<{
     label: string
     name: string
   }
+  targetPosition?: Position
 
 }>()
 
@@ -26,7 +27,8 @@ function isValidTargetConnection(connection: any) {
   <div :class="['node-base', type]">
     {{ props.data.label }}
     <div v-if="props.data.name" style="color: black; font-size: 11px;">{{ props.data.name }}</div>
-    <Handle type="target" :position="Position.Top" id="target-n" :is-valid-connection="isValidTargetConnection" />
+    <Handle type="target" :position="props.targetPosition ?? Position.Top" id="target-n"
+      :is-valid-connection="isValidTargetConnection" />
 
   </div>
 

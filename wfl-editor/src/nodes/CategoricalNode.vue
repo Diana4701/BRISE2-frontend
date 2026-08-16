@@ -11,7 +11,8 @@ const props = defineProps<{
     label: string
     name: string
   }
-
+  targetPosition?: Position
+  sourcePosition?: Position
 }>()
 
 const graphStore = useGraphStore()
@@ -26,8 +27,9 @@ function isValidTargetConnection(connection: any) {
   <div :class="['node-base', type]">
     {{ props.data.label }}
     <div v-if="props.data.name" style="color: black; font-size: 11px;">{{ props.data.name }}</div>
-    <Handle type="target" :position="Position.Top" id="target-c" :is-valid-connection="isValidTargetConnection" />
-    <Handle type="source" :position="Position.Bottom" id="source-c" />
+    <Handle type="target" :position="props.targetPosition ?? Position.Top" id="target-c"
+      :is-valid-connection="isValidTargetConnection" />
+    <Handle type="source" :position="props.sourcePosition ?? Position.Bottom" id="source-c" />
 
   </div>
 </template>

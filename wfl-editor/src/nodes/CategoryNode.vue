@@ -10,7 +10,8 @@ const props = defineProps<{
     label: string
     name: string
   }
-
+  targetPosition?: Position
+  sourcePosition?: Position
 }>()
 
 const graphStore = useGraphStore()
@@ -30,8 +31,9 @@ const isDefaultOf = computed(() => {
 <template>
   <div class="category-box" :class="{ 'is-default': isDefaultOf }">
     <div v-if="props.data.name" style="color: black; font-size: 11px;">{{ props.data.name }}</div>
-    <Handle type="target" :position="Position.Top" :is-valid-connection="isValidTargetConnection" />
-    <Handle type="source" :position="Position.Bottom" />
+    <Handle type="target" :position="props.targetPosition ?? Position.Top"
+      :is-valid-connection="isValidTargetConnection" />
+    <Handle type="source" :position="props.sourcePosition ?? Position.Bottom" />
   </div>
 </template>
 

@@ -4,8 +4,6 @@ import type { Node, Edge } from '@vue-flow/core'
 
 import { ref } from 'vue'
 
-//use the `dagre` library to calculate the layout of the nodes and edges
-
 export function useLayout() {
   const { findNode } = useVueFlow()
 
@@ -14,24 +12,23 @@ export function useLayout() {
   const previousDirection = ref('LR')
 
   function layout(nodes : Node[], edges: Edge[], direction: string) {
-    // we create a new graph instance, in case some nodes/edges were removed, otherwise dagre would act as if they were still there
+   if (!nodes || !edges) {
+        console.warn('layout() called without nodes/edges', { nodes, edges })
+        return nodes ?? []
+    }
+
     const dagreGraph = new dagre.graphlib.Graph()
-
     graph.value = dagreGraph
-
     dagreGraph.setDefaultEdgeLabel(() => ({}))
 
     const isHorizontal = direction === 'LR'
     dagreGraph.setGraph({ rankdir: direction })
-
     previousDirection.value = direction
 
     for (const node of nodes) {
-   
-        // if you need width+height of nodes for your layout, you can use the dimensions property of the internal node (`GraphNode` type)
-      const graphNode = findNode(node.id)
-        if(!graphNode) return
-      dagreGraph.setNode(node.id, { width: graphNode.dimensions.width || 150, height: graphNode.dimensions.height || 50 })
+        const graphNode = findNode(node.id)
+        if(!graphNode) continue
+      dagreGraph.setNode(node.id, { width: graphNode.dimensions.width || 250, height: graphNode.dimensions.height || 80 })
     }
 
     for (const edge of edges) {
@@ -40,15 +37,19 @@ export function useLayout() {
 
     dagre.layout(dagreGraph)
 
-    // set nodes with updated positions
+
     return nodes.map((node : Node) => {
       const nodeWithPosition = dagreGraph.node(node.id)
+      if (!nodeWithPosition) return node
+const graphNode = findNode(node.id)
+    const width = graphNode?.dimensions.width || 150
+    const height = graphNode?.dimensions.height || 70
 
       return {
         ...node,
         targetPosition: isHorizontal ? Position.Left : Position.Top,
         sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
-        position: { x: nodeWithPosition.x, y: nodeWithPosition.y },
+        position: { x: nodeWithPosition.x - width / 2, y: nodeWithPosition.y -  height / 2, },
       }
     })
   }

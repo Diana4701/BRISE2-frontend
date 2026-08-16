@@ -370,7 +370,7 @@ export const useGraphStore = defineStore('graph', () => {
          saveCheckpoint()
         if(!targetId) return
  
-        // find current selected node (of whom sidebar is shown) 
+        // find current selected node (of which sidebar is shown) 
         const parentNode = getParent(targetId)
 
          // handle change of default path if default node is deleted
@@ -455,7 +455,7 @@ function sortOrdinalCategories(parentId: string, orderedIds: string[]) {
                 })
         
 
-            // extract default for categorical nodes
+            // extract default path for categorical nodes
           
            if(isCategorical){
           

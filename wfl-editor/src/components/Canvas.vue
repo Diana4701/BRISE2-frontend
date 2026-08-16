@@ -19,11 +19,17 @@ const { nodes: flowNodes, addEdges, onConnect, edges: flowEdges, addNodes, onNod
 const { layout } = useLayout()
 
 
-async function layoutGraph() {
 
-}
 
 const graphStore = useGraphStore()
+
+async function layoutGraph(direction: any) {
+    graphStore.nodes = layout(graphStore.nodes, graphStore.edges, direction)
+
+    nextTick(() => {
+        fitView()
+    })
+}
 
 // bind types with .vue components
 const myNodeTypes = {
@@ -154,10 +160,7 @@ function testXML() {
 }
 
 const isCodeWindowOpen = ref(false)
-/*
-const isDefaultOf = computed(() => {
-    return graphStore.isDefaultOf()
-}) */
+
 </script>
 
 <template>
@@ -165,7 +168,7 @@ const isDefaultOf = computed(() => {
         <VueFlow v-model:nodes="graphStore.nodes" v-model:edges="graphStore.edges" :node-types="myNodeTypes"
             connection-mode="strict" :is-valid-connection="isValidConnection" @nodes-change="onChange"
             :default-edge-options="{ type: 'smoothstep', animated: false }" @node-click="onNodeClick"
-            @pane-click="onPaneClick">
+            @pane-click="onPaneClick" @nodes-initialized="layoutGraph('LR')">
 
             <Panel position="top-right" class="custom-center-panel">
                 <Toolbar />
@@ -181,6 +184,16 @@ const isDefaultOf = computed(() => {
                     @click="graphStore.redoAction()">
                     <font-awesome-icon icon="fa-solid fa-redo" /> Redo
                 </button>
+
+                <div class="layout">
+                    <button @click="layoutGraph('LR')">
+                        layout vertical
+                    </button>
+
+                    <button @click="layoutGraph('TB')">
+                        layout horizontal
+                    </button>
+                </div>
             </Panel>
         </VueFlow>
 
@@ -219,6 +232,11 @@ const isDefaultOf = computed(() => {
     letter-spacing: 0.02em;
     transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.layout-panel {
+    display: flex;
+    gap: 30px;
 }
 
 .btn:hover {
