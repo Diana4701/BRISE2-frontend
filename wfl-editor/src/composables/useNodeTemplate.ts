@@ -94,7 +94,7 @@ export function nominalTemplate(node: NominalNode, childrenWfl: string[]): strin
 
 export function ordinalTemplate(node: OrdinalNode, childrenWfl: string[]): string {
     const lines: string[] = [...childrenWfl]
-       if (node.level !== undefined) lines.push(indent(`[Level = ${node.level}]`))   
+    if (node.level !== undefined) lines.push(indent(`[Level = ${node.level}]`))   
  
     if (node.default !== undefined) lines.push(indent(`[Default = "${node.default}"]`))
  

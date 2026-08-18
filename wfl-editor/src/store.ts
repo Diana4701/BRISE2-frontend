@@ -54,10 +54,19 @@ export const useGraphStore = defineStore('graph', () => {
         const isFilled = (value: any) =>value !== null && value !== undefined
 
         if(node.type === 'float' || node.type === 'integer') {
-            return isFilled(c?.lower) && isFilled(c?.upper) && isFilled(c?.default)
+          if(!isFilled(c?.lower) || !isFilled(c?.upper) || !isFilled(c?.default)){
+            return false
         }
+        const lower = Number(c.lower)
+        const upper = Number(c.upper)
+        const def = Number(c.default)
+        if(lower > upper) return false
+        if(def < lower || def > upper) return false
 
-        if (node.type === 'nominal' || node.type === 'ordinal') {
+        return true
+    }
+
+    if (node.type === 'nominal' || node.type === 'ordinal') {
         return (node.data?.childrenIds?.length ?? 0) > 0 && isFilled(node.data?.defaultPathId)
     }
     return true

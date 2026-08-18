@@ -65,14 +65,23 @@ export function useXmlToWfl() {
         const root = doc.documentElement // SearchSpace
         // generate inner waffle content for the top level nodes
         const topLevelNodes = Array.from(root.children).map(parseXmlElement)
+         const structure = 
+          `xor Structure {
+                Flat
+                Hierarchical
+            }
+            [fcard.ConfigurationSelection.Predictor.Model = size unique Level at self]
+            `
         const innerContent = topLevelNodes.map(generateWfl).join('\n\n')
-        
-        const indentedContent = innerContent
+        const fullContent = `${innerContent}\n\n${structure}`
+        const indentedContent = fullContent
             .split('\n')
             .map(line => '  ' + line)
             .join('\n')
 
             return `SearchSpace {\n${indentedContent}\n}`
+
+ 
     }
     return { convert }
 }

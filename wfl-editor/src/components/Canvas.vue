@@ -186,12 +186,12 @@ const isCodeWindowOpen = ref(false)
                 </button>
 
                 <div class="layout">
-                    <button @click="layoutGraph('LR')">
-                        layout vertical
+                    <button class="btn layout-horizontal" @click="layoutGraph('LR')">
+                        layout horizontal
                     </button>
 
-                    <button @click="layoutGraph('TB')">
-                        layout horizontal
+                    <button class="btn layout-vertical" @click="layoutGraph('TB')">
+                        layout vertical
                     </button>
                 </div>
             </Panel>
@@ -263,6 +263,19 @@ const isCodeWindowOpen = ref(false)
     gap: 8px;
     z-index: 40;
 
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+}
+
+.layout-horizontal {
+    background-color: #3b4252;
+    color: #eceff4;
+    border-color: #4c566a;
 }
 
 .history-btn {

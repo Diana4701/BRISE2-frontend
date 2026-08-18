@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useVueFlow } from '@vue-flow/core'
-import { ref, markRaw, watch } from 'vue'
 import { useGraphStore } from '../store.ts'
 
 
